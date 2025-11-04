@@ -1,0 +1,32 @@
+{
+  "name": "spark-employee-records",
+  "version": "1.0.0",
+  "description": "Employee Record Management using Oracle JET",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "serve": "http-server dist -p 8080"
+  },
+  "keywords": [
+    "oracle-jet",
+    "employee",
+    "records"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@oracle/oraclejet": "^10.0.0",
+    "knockout": "^3.5.1"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.8.1",
+    "html-webpack-plugin": "^5.5.3",
+    "http-server": "^14.1.1",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  }
+}
