@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Employee Records - Spark</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Redwood Theme Styling -->
+  <style>
+    /* Oracle Redwood Design System Color Palette */
+    :root {
+      /* Primary Colors (Oracle Blue) */
+      --redwood-primary: #0572CE;
+      --redwood-primary-hover: #045AA3;
+      --redwood-primary-active: #034782;
+      --redwood-primary-light: #E8F4FD;
+      --redwood-primary-dark: #02456A;
+      
+      /* Semantic Colors */
+      --redwood-success: #2E7D32;
+      --redwood-success-light: #E8F5E9;
+      --redwood-success-dark: #1B5E20;
+      --redwood-warning: #F57C00;
+      --redwood-warning-light: #FFF3E0;
+      --redwood-warning-dark: #E65100;
+      --redwood-error: #E62700;
+      --redwood-error-light: #FFEBEE;
+      --redwood-error-dark: #B71C1C;
+      --redwood-info: #0277BD;
+      --redwood-info-light: #E1F5FE;
+      --redwood-info-dark: #01579B;
+      
+      /* Neutral Colors (Grays) */
+      --redwood-text-primary: #1B1C1D;
+      --redwood-text-secondary: #6E6E6E;
+      --redwood-text-tertiary: #9E9E9E;
+      --redwood-text-disabled: #CACCD0;
+      
+      --redwood-border-default: #CACCD0;
+      --redwood-border-light: #E0E0E0;
+      --redwood-border-dark: #9E9E9E;
+      
+      --redwood-background: #FFFFFF;
+      --redwood-background-secondary: #F7F9FA;
+      --redwood-background-tertiary: #F0F1F2;
+      --redwood-background-hover: #F5F5F5;
+      --redwood-background-active: #EEEEEE;
+      
+      /* Page Background with subtle color */
+      --redwood-page-bg-start: #EBF1F7;
+      --redwood-page-bg-end: #E2ECF4;
+      
+      /* Focus & Selection */
+      --redwood-focus: #0572CE;
+      --redwood-focus-shadow: rgba(5, 114, 206, 0.15);
+      --redwood-selection: #E8F4FD;
+      
+      /* Shadows */
+      --redwood-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --redwood-shadow-md: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --redwood-shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+      
+      /* Spacing */
+      --redwood-radius-sm: 4px;
+      --redwood-radius-md: 8px;
+      --redwood-radius-lg: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, var(--redwood-page-bg-start) 0%, var(--redwood-page-bg-end) 50%, #D9E5F0 100%);
+      background-color: var(--redwood-page-bg-start); /* Fallback for browsers that don't support gradients */
+      background-attachment: fixed;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      color: var(--redwood-text-primary);
+    }
+    .employee-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+    .page-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--redwood-border-light);
+    }
+    .page-header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--redwood-text-primary);
+      letter-spacing: -0.02em;
+    }
+    .page-header .subtitle {
+      margin-top: 8px;
+      color: var(--redwood-text-secondary);
+      font-size: 14px;
+      font-weight: 400;
+    }
+    .content-card {
+      background: var(--redwood-background);
+      border-radius: var(--redwood-radius-md);
+      box-shadow: 0 2px 12px rgba(5, 114, 206, 0.08), 0 1px 4px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--redwood-border-light);
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    .content-card:hover {
+      box-shadow: 0 4px 16px rgba(5, 114, 206, 0.12), 0 2px 8px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+      border-color: rgba(5, 114, 206, 0.2);
+    }
+    .form-section {
+      margin-bottom: 24px;
+    }
+    .form-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--redwood-text-primary);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--redwood-border-light);
+      letter-spacing: -0.01em;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+    .form-field {
+      display: flex;
+      flex-direction: column;
+    }
+    .form-field label {
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--redwood-text-primary);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .form-field input,
+    .form-field select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--redwood-border-default);
+      border-radius: var(--redwood-radius-sm);
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      background-color: var(--redwood-background);
+      color: var(--redwood-text-primary);
+      line-height: 1.5;
+    }
+    .form-field input::placeholder {
+      color: var(--redwood-text-tertiary);
+      opacity: 1;
+    }
+    .form-field input:hover:not(:disabled),
+    .form-field select:hover:not(:disabled) {
+      border-color: var(--redwood-border-dark);
+    }
+    .form-field input:focus,
+    .form-field select:focus {
+      outline: none;
+      border-color: var(--redwood-focus);
+      box-shadow: 0 0 0 3px var(--redwood-focus-shadow);
+    }
+    .form-field input:disabled,
+    .form-field select:disabled {
+      background-color: var(--redwood-background-secondary);
+      color: var(--redwood-text-secondary);
+      cursor: not-allowed;
+      border-color: var(--redwood-border-light);
+    }
+    .form-field input[required]:invalid:not(:focus):not(:placeholder-shown),
+    .form-field select[required]:invalid:not(:focus) {
+      border-color: var(--redwood-error);
+    }
+    .form-field input[required]:invalid:focus:not(:placeholder-shown),
+    .form-field select[required]:invalid:focus {
+      border-color: var(--redwood-error);
+      box-shadow: 0 0 0 3px rgba(230, 39, 0, 0.15);
+    }
+    .form-field select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231B1C1D' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--redwood-border-light);
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--redwood-radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1.5;
+      min-width: 80px;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background-color: var(--redwood-primary);
+      color: #FFFFFF;
+      border: 1px solid var(--redwood-primary);
+      box-shadow: var(--redwood-shadow-sm);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--redwood-primary-hover);
+      border-color: var(--redwood-primary-hover);
+      box-shadow: var(--redwood-shadow-md);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active:not(:disabled) {
+      background-color: var(--redwood-primary-active);
+      border-color: var(--redwood-primary-active);
+      box-shadow: var(--redwood-shadow-sm);
+      transform: translateY(0);
+    }
+    .btn-primary:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--redwood-focus-shadow);
+    }
+    .btn-secondary {
+      background-color: var(--redwood-background);
+      color: var(--redwood-primary);
+      border: 1px solid var(--redwood-border-default);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background-color: var(--redwood-background-hover);
+      border-color: var(--redwood-primary);
+      color: var(--redwood-primary-hover);
+    }
+    .btn-secondary:active:not(:disabled) {
+      background-color: var(--redwood-background-active);
+      border-color: var(--redwood-primary-active);
+      color: var(--redwood-primary-active);
+    }
+    .btn-secondary:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--redwood-focus-shadow);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: var(--redwood-background-tertiary);
+      color: var(--redwood-text-disabled);
+      border-color: var(--redwood-border-light);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: var(--redwood-radius-lg);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .status-active {
+      background-color: var(--redwood-success-light);
+      color: var(--redwood-success-dark);
+      border: 1px solid var(--redwood-success);
+    }
+    .status-inactive {
+      background-color: var(--redwood-error-light);
+      color: var(--redwood-error-dark);
+      border: 1px solid var(--redwood-error);
+    }
+    
+    /* Additional Redwood Theme Enhancements */
+    ::selection {
+      background-color: var(--redwood-selection);
+      color: var(--redwood-text-primary);
+    }
+    
+    /* Scrollbar styling for webkit browsers */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--redwood-background-secondary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--redwood-border-default);
+      border-radius: var(--redwood-radius-sm);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--redwood-border-dark);
+    }
+    
+    /* Link styles */
+    a {
+      color: var(--redwood-primary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    a:hover {
+      color: var(--redwood-primary-hover);
+      text-decoration: underline;
+    }
+    a:focus {
+      outline: 2px solid var(--redwood-focus);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="employee-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>Employee Record</h1>
+      <div class="subtitle">Manage employee information and details</div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="appContent">
+      <!-- Employee Information Card -->
+      <div class="content-card">
+        <div class="form-section">
+          <div class="form-section-title">Basic Information</div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="employeeId">Employee ID</label>
+              <input type="text" id="employeeId" data-bind="value: employeeId" disabled />
+            </div>
+            <div class="form-field">
+              <label for="status">Status</label>
+              <select id="status" data-bind="value: status, options: statusOptions, optionsText: 'label', optionsValue: 'value'"></select>
+            </div>
+            <div class="form-field">
+              <label for="employeeType">Employee Type</label>
+              <select id="employeeType" data-bind="value: employeeType, options: employeeTypeOptions, optionsText: 'label', optionsValue: 'value'"></select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="firstName">First Name *</label>
+              <input type="text" id="firstName" data-bind="value: firstName" required />
+            </div>
+            <div class="form-field">
+              <label for="middleName">Middle Name</label>
+              <input type="text" id="middleName" data-bind="value: middleName" />
+            </div>
+            <div class="form-field">
+              <label for="lastName">Last Name *</label>
+              <input type="text" id="lastName" data-bind="value: lastName" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="displayName">Display Name</label>
+              <input type="text" id="displayName" data-bind="value: displayName" />
+            </div>
+            <div class="form-field">
+              <label for="email">Email *</label>
+              <input type="email" id="email" data-bind="value: email" required />
+            </div>
+            <div class="form-field">
+              <label for="phone">Phone</label>
+              <input type="text" id="phone" data-bind="value: phone" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="mobile">Mobile</label>
+              <input type="text" id="mobile" data-bind="value: mobile" />
+            </div>
+            <div class="form-field">
+              <label for="department">Department</label>
+              <select id="department" data-bind="value: department, options: departmentOptions, optionsText: 'label', optionsValue: 'value'"></select>
+            </div>
+            <div class="form-field">
+              <label for="jobTitle">Job Title</label>
+              <input type="text" id="jobTitle" data-bind="value: jobTitle" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employment Details Card -->
+      <div class="content-card">
+        <div class="form-section">
+          <div class="form-section-title">Employment Details</div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="hireDate">Hire Date</label>
+              <input type="date" id="hireDate" data-bind="value: hireDate" />
+            </div>
+            <div class="form-field">
+              <label for="terminationDate">Termination Date</label>
+              <input type="date" id="terminationDate" data-bind="value: terminationDate" />
+            </div>
+            <div class="form-field">
+              <label for="employeeNumber">Employee Number</label>
+              <input type="text" id="employeeNumber" data-bind="value: employeeNumber" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="manager">Manager</label>
+              <input type="text" id="manager" data-bind="value: manager" />
+            </div>
+            <div class="form-field">
+              <label for="location">Location</label>
+              <select id="location" data-bind="value: location, options: locationOptions, optionsText: 'label', optionsValue: 'value'"></select>
+            </div>
+            <div class="form-field">
+              <label for="costCenter">Cost Center</label>
+              <input type="text" id="costCenter" data-bind="value: costCenter" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information Card -->
+      <div class="content-card">
+        <div class="form-section">
+          <div class="form-section-title">Contact Information</div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="addressLine1">Address Line 1</label>
+              <input type="text" id="addressLine1" data-bind="value: addressLine1" />
+            </div>
+            <div class="form-field">
+              <label for="addressLine2">Address Line 2</label>
+              <input type="text" id="addressLine2" data-bind="value: addressLine2" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="city">City</label>
+              <input type="text" id="city" data-bind="value: city" />
+            </div>
+            <div class="form-field">
+              <label for="state">State/Province</label>
+              <input type="text" id="state" data-bind="value: state" />
+            </div>
+            <div class="form-field">
+              <label for="zipCode">Zip/Postal Code</label>
+              <input type="text" id="zipCode" data-bind="value: zipCode" />
+            </div>
+            <div class="form-field">
+              <label for="country">Country</label>
+              <select id="country" data-bind="value: country, options: countryOptions, optionsText: 'label', optionsValue: 'value'"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="content-card">
+        <div class="action-buttons">
+          <button type="button" class="btn btn-secondary" id="cancelBtn" disabled data-bind="click: cancelEdit">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveBtn" data-bind="click: saveEmployee">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="bundle.js"></script>
+</body>
+</html>
